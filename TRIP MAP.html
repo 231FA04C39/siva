@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Map </title>
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <!-- Include Leaflet Search Control CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.1.0/dist/Control.Geocoder.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<h1>My Trip Map with Search</h1>
+<div id="map"></div>
+
+<!-- Include Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<!-- Include Leaflet Control Geocoder JS (Search Bar) -->
+<script src="https://cdn.jsdelivr.net/npm/leaflet-control-geocoder@2.1.0/dist/Control.Geocoder.js"></script>
+
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 2);  // Set center to a location (latitude, longitude) and zoom level
+
+    // Add a tile layer to the map (this is where you set the map's appearance)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Create a default marker
+    var marker;
+
+    // Add a search control to the map (Nominatim geocoding service)
+    var geocoder = L.Control.Geocoder.nominatim();
+    var searchControl = new L.Control.Geocoder({
+        geocoder: geocoder
+    }).addTo(map);
+
+    // Handle the search result (when a user selects a location)
+    searchControl.on('markgeocode', function(e) {
+        var latlng = e.geocode.center;
+        
+        // If a marker already exists, remove it
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        
+        // Add a new marker at the selected location
+        marker = L.marker(latlng).addTo(map)
+            .bindPopup("<b>Selected Location</b><br>" + e.geocode.name)
+            .openPopup();
+        
+        // Center the map on the selected location
+        map.setView(latlng, 10);  // Adjust zoom level if needed
+    });
+
+</script>
+
+</body>
+</html>
